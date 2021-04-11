@@ -4,8 +4,11 @@
 <form action="/register" method="POST">
   <p>Name:<br>
   <input type="text" name="name"></p>
-  <p>Usergroup:<br>
-  <input type="text" name="usergroup"></p>
+  <label for="usergroup">Usergroup:</label>
+  <select name="usergroup" id="usergroup">
+    <option value="normal">Normal</option>
+    <option value="admin">Admin</option>
+  </select>
   <p>Username:<br>
   <input type="text" name="username"></p>
   <p>Password:<br>

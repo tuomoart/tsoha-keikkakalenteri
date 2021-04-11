@@ -9,6 +9,8 @@ class PSGdatabase:
 
         self.initializeUsers()
     
+    #Users:
+
     def initializeUsers(self):
         sql = "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT, username TEXT, password TEXT, usergroup TEXT, email TEXT, phone TEXT);"
         self.db.session.execute(sql)
