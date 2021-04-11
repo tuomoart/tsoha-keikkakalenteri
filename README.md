@@ -1,5 +1,27 @@
 # Tietokantasovellus
 
+## Sovelluksen käyttö
+
+Satunnainen käyttäjä ei voi luoda käyttäjätunnusta itse. Tämän takia testikäyttöä varten sovelluksessa on valmiina kaksi käyttäjää:
+
+
+Admin-oikeuksilla:
+
+käyttäjänimi: AdminTesti
+salasana: AdminTesti
+
+
+Peruskäyttäjä:
+
+käyttäjänimi: testi
+salasana: testi
+
+
+Vain admin-oikeuksilla varustettu käyttäjä voi luoda uusia käyttäjiä.
+
+
+## Sovelluksen kuvaus
+
 Tarkoituksena on rakentaa sovellus keikkaluontoisen työskentelyn työvuorojen hallinnointiin. Sen avulla ylläpidetään tietoa keikoista, niiden tiedoista ja työntekijöistä sekä tekijöiden tiedoista. Sovelluksella on kahdenlaisia käyttäjiä, peruskäyttäjiä (työntekijät) ja ylläpitäjiä (tiiminvetäjät).
 
 Mahdollisia ominaisuuksia:
