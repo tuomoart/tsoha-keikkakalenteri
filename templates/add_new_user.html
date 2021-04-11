@@ -9,6 +9,12 @@
   <p>Username:<br>
   <input type="text" name="username"></p>
   <p>Password:<br>
-  <input type="password" name="password"></p>
+  <input type="text" name="password"></p>
+  <p>Confirm password:<br>
+  <input type="text" name="passwordConf"></p>
   <input type="submit" value="Add">
 </form>
+
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }} </p>
+{% endif %}

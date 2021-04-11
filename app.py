@@ -4,18 +4,21 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
 from flask_sqlalchemy import SQLAlchemy
 
+from PSGdatabase import PSGdatabase
+
 app = Flask(__name__)
 app.secret_key = getenv("SECRET_KEY")
-#app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///tuomoart?host=/home/tuomoart/pgsql/sock"
-db = SQLAlchemy(app)
+app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 
+db = PSGdatabase(app)
 
 @app.route("/")
 def index():
-    result = db.session.execute("SELECT * FROM users")
-    print(result.fetchall())
-    return render_template("index.html")
+    try:
+        isAdmin = db.isAdmin(session["username"])
+    except:
+        isAdmin = False
+    return render_template("index.html", isAdmin=isAdmin)
 
 @app.route("/main", methods=["POST"])
 def result():
@@ -25,11 +28,9 @@ def result():
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    sql = "SELECT password FROM users WHERE username=:username"
-    result = db.session.execute(sql, {"username":username})
-    user = result.fetchone()    
+    user = db.getPassword(username)
     if user == None:
-        error = "Invalid login credentials"
+        error = "Invalid username"
         return render_template("index.html", error=error)
     else:
         hash_value = user[0]
@@ -37,7 +38,7 @@ def login():
             session["username"] = username
             return redirect("/")
         else:
-            error = "Invalid login credentials"
+            error = "Invalid password"
             return render_template("index.html", error=error)
     
 
@@ -48,15 +49,24 @@ def logout():
 
 @app.route("/register", methods=["POST"])
 def register():
-    name = request.form["name"]
-    usergroup = request.form["usergroup"]
-    username = request.form["username"]
-    password = request.form["password"]
-    hash_value = generate_password_hash(password)
-    sql = "INSERT INTO users (name,username,password,usergroup) VALUES (:name,:username,:password,:usergroup)"
-    db.session.execute(sql, {"name":name,"username":username,"password":hash_value,"usergroup":usergroup})
-    db.session.commit()
-    return redirect("/")
+    if db.isAdmin(session["username"]):
+        name = request.form["name"]
+        usergroup = request.form["usergroup"]
+        username = request.form["username"]
+        password = request.form["password"]
+        passwordConf = request.form["passwordConf"]
+        if db.usernameExists(username):
+            error = "Username already exists!"
+            return render_template("add_new_user.html", error=error)
+        if password != passwordConf:
+            error = "Passwords didn't match!"
+            return render_template("add_new_user.html", error=error)
+        hash_value = generate_password_hash(password)
+        db.createUser(name, username, hash_value, usergroup)
+        return redirect("/")
+    else:
+        error = "You are not an admin!"
+        return render_template("add_new_user.html", error=error)
 
 @app.route("/add_new_user")
 def addNewUser():
@@ -64,6 +74,5 @@ def addNewUser():
 
 @app.route("/purge")
 def purge():
-    db.session.execute("DELETE FROM users")
-    db.session.commit()
+    db.purgeUsers()
     return redirect("/")
