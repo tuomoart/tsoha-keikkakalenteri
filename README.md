@@ -1,5 +1,11 @@
 # Tietokantasovellus
 
+## Sovelluksen eteneminen
+
+Sovelluksessa on nyt melko valmis kirjautuminen palautteineen ja käyttäjärooleineen.
+
+Sovellus löytyy [Herokusta](https://keikkakalenteri.herokuapp.com/)
+
 ## Sovelluksen käyttö
 
 Satunnainen käyttäjä ei voi luoda käyttäjätunnusta itse. Tämän takia testikäyttöä varten sovelluksessa on valmiina kaksi käyttäjää:
