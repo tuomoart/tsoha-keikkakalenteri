@@ -1,12 +1,18 @@
 <title>Keikkakalenteri</title>
 <h1>Keikkakalenteri</h1>
-<h2>Kirjaudu sisään:</h2>
-<form action="/main" method="POST">
-  Käyttäjätunnus:
-  <input type="text" name="username">
-  <br>
-  Salasana:
-  <input type="text" name="password">
-  <br>
-  <input type="submit" value="Lähetä">
+{% if session.username %}
+<p>You are logged in as {{ session.username }}</p>
+<a href="/add_new_user">Add a new user</a>
+<a href="/logout">Log out</a>
+{% else %}
+<form action="/login" method="POST">
+<p>Username:<br>
+<input type="text" name="username"></p>
+<p>Password:<br>
+<input type="password" name="password"></p>
+<input type="submit" value="Login">
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}
+{% endif %}
 </form>
+{% endif %}
