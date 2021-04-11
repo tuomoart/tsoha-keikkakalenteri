@@ -8,12 +8,14 @@ Satunnainen käyttäjä ei voi luoda käyttäjätunnusta itse. Tämän takia tes
 Admin-oikeuksilla:
 
 käyttäjänimi: AdminTesti
+
 salasana: AdminTesti
 
 
 Peruskäyttäjä:
 
 käyttäjänimi: testi
+
 salasana: testi
 
 
