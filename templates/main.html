@@ -1,1 +1,36 @@
-<h2>Keikat käyttäjälle {{ username }}:</h2>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+<title>Keikkakalenteri</title>
+<h1>Keikkakalenteri</h1>
+
+{% if session.username %}
+  <p>You are logged in as {{ session.username }}</p>
+  {% if isAdmin %}
+    <a href="/add_new_user">Add a new user</a>
+    <a href="/add_new_job">Add a new event</a>
+  {% endif %}
+  <a href="/logout">Log out</a>
+  <h2>Keikat käyttäjälle {{ session.username }}:</h2>
+  <table>
+    <tr>
+      <th>Event</th>
+      <th>Time</th>
+      <th>Location</th>
+      <th>Participants</th>
+    </tr>
+    {% for job in jobs: %}
+      <tr>
+        <td>{{ job[1] }}</td>
+        <td>{{ job[2] }}</td>
+        <td>{{ job[3] }}</td>
+        <td>
+          {% for participant in job[4] %}
+            {{ participant }}<br>
+          {% endfor %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <meta http-equiv="refresh" content="0; URL=/" />
+{% endif %}

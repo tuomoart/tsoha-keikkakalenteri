@@ -14,15 +14,24 @@ db = PSGdatabase(app)
 
 @app.route("/")
 def index():
+    return render_template("index.html")
+
+@app.route("/main")
+def mainPage():
     try:
         isAdmin = db.isAdmin(session["username"])
     except:
         isAdmin = False
-    return render_template("index.html", isAdmin=isAdmin)
-
-@app.route("/main", methods=["POST"])
-def result():
-    return render_template("main.html", username=request.form["username"])
+    
+    try:
+        user = session["username"]
+        jobs = db.getJobs(user)
+        print(jobs)
+        return render_template("main.html", isAdmin=isAdmin, jobs=jobs)
+    except Exception as e:
+        print(e)
+        return redirect("/")
+    
 
 @app.route("/login",methods=["POST"])
 def login():
@@ -36,7 +45,7 @@ def login():
         hash_value = user[0]
         if check_password_hash(hash_value,password):
             session["username"] = username
-            return redirect("/")
+            return redirect("/main")
         else:
             error = "Invalid password"
             return render_template("index.html", error=error)
@@ -68,9 +77,23 @@ def register():
         error = "You are not an admin!"
         return render_template("add_new_user.html", error=error)
 
+@app.route("/createJob", methods=["POST"])
+def createJob():
+    name = request.form["name"]
+    time = request.form["time"]
+    location = request.form["location"]
+    participants = request.form.getlist("participants")
+    db.createJob(name, time, location, participants)
+    return redirect("/main")
+
 @app.route("/add_new_user")
 def addNewUser():
     return render_template("add_new_user.html")
+
+@app.route("/add_new_job")
+def addNewJob():
+    participants = db.getUsers()
+    return render_template("add_new_job.html", participants=participants)
 
 @app.route("/purge")
 def purge():
