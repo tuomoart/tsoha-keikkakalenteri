@@ -24,9 +24,13 @@
         <td>{{ job[2] }}</td>
         <td>{{ job[3] }}</td>
         <td>
-          {% for participant in job[4] %}
-            {{ participant }}<br>
-          {% endfor %}
+          <table>
+            {% for participant in job[4] %}
+              <tr>
+                <td>{{ participant[0] }}</td><td>{{ participant[1] }}</td>
+              </tr>
+            {% endfor %}
+          </table>
         </td>
       </tr>
     {% endfor %}

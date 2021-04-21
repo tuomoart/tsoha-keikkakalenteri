@@ -1,6 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
 from os import getenv
+
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
+
 
 class PSGdatabase:
     def __init__(self, app):
@@ -68,17 +70,16 @@ class PSGdatabase:
 
     def initializeJobs(self):
         sql = "CREATE TABLE IF NOT EXISTS jobs (id SERIAL PRIMARY KEY, name TEXT, time TEXT, location TEXT);"
-        sql += "CREATE TABLE IF NOT EXISTS participants (id SERIAL PRIMARY KEY, jobId INT, userId INT);"
+        sql += "CREATE TABLE IF NOT EXISTS participants (id SERIAL PRIMARY KEY, jobId INT, userId INT, status TEXT);"
         self.db.session.execute(sql)
         self.db.session.commit()
     
     def getJobs(self, user):
         if self.isAdmin(user):
-            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT u.name FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j ORDER BY j.time, j.name;"
+            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j ORDER BY j.time, j.name;"
             result =  self.db.session.execute(sql).fetchall()
         else:
-            id = self.getIdByUsername(user)
-            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT u.name FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE :username IN (SELECT u.name FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) ORDER BY j.time, j.name;"
+            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE :username IN (SELECT u.name FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) ORDER BY j.time, j.name;"
             result =  self.db.session.execute(sql, {"username":user}).fetchall()
         self.db.session.commit()
         return result
@@ -87,6 +88,6 @@ class PSGdatabase:
         sql="INSERT INTO jobs (name, time, location) VALUES (:name,:time,:location) RETURNING id;"
         id = self.db.session.execute(sql, {"name":name,"time":time,"location":location}).fetchone()[0]
         for userId in participants:
-            sql="INSERT INTO participants (jobId, userId) VALUES (:jobId,:userId)"
+            sql="INSERT INTO participants (jobId, userId, status) VALUES (:jobId,:userId, 'Waiting')"
             self.db.session.execute(sql, {"jobId":id, "userId":userId})
         self.db.session.commit()
