@@ -16,7 +16,7 @@
       <th>Event</th>
       <th>Time</th>
       <th>Location</th>
-      <th>Participants</th>
+      <th>{% if isAdmin %}Participants{% else %}Status{% endif %}</th>
     </tr>
     {% for job in jobs: %}
       <tr>
@@ -24,13 +24,24 @@
         <td>{{ job[2] }}</td>
         <td>{{ job[3] }}</td>
         <td>
-          <table>
-            {% for participant in job[4] %}
-              <tr>
-                <td>{{ participant[0] }}</td><td>{{ participant[1] }}</td>
-              </tr>
-            {% endfor %}
-          </table>
+          {% if isAdmin %}
+            <table>
+              {% for participant in job[4] %}
+                <tr>
+                  <td>{{ participant[1] }}</td>
+                  <td>{{ participant[2] }}</td>
+                  <td><a href="/deleteParticipant?event={{ job[0] }}&participant={{ participant[0] }}">Delete</a></td>
+                </tr>
+              {% endfor %}
+            </table>
+          {% else %}
+            {% if job[4][0][2] == 'Waiting' %}
+              Waiting,
+              <a href="/accept?event={{ job[0] }}&participant={{ job[4][0][0] }}">Click to accept</a>
+            {% else %}
+              Accepted
+            {% endif %}
+          {% endif %}
         </td>
       </tr>
     {% endfor %}

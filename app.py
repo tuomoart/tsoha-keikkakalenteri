@@ -86,6 +86,20 @@ def createJob():
     db.createJob(name, time, location, participants)
     return redirect("/main")
 
+@app.route("/accept")
+def accept():
+    jobId = request.args['event']
+    userId = request.args['participant']
+    db.markAccepted(jobId, userId)
+    return redirect("/main")
+
+@app.route("/deleteParticipant")
+def deleteParticipant():
+    jobId = request.args['event']
+    userId = request.args['participant']
+    db.deleteParticipant(jobId, userId)
+    return redirect("/main")
+
 @app.route("/add_new_user")
 def addNewUser():
     return render_template("add_new_user.html")

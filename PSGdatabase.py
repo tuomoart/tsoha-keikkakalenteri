@@ -76,10 +76,10 @@ class PSGdatabase:
     
     def getJobs(self, user):
         if self.isAdmin(user):
-            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j ORDER BY j.time, j.name;"
+            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j ORDER BY j.time, j.name;"
             result =  self.db.session.execute(sql).fetchall()
         else:
-            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE :username IN (SELECT u.name FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) ORDER BY j.time, j.name;"
+            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE :username IN (SELECT u.name FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) ORDER BY j.time, j.name;"
             result =  self.db.session.execute(sql, {"username":user}).fetchall()
         self.db.session.commit()
         return result
@@ -90,4 +90,14 @@ class PSGdatabase:
         for userId in participants:
             sql="INSERT INTO participants (jobId, userId, status) VALUES (:jobId,:userId, 'Waiting')"
             self.db.session.execute(sql, {"jobId":id, "userId":userId})
+        self.db.session.commit()
+    
+    def markAccepted(self, jobId, userId):
+        sql="UPDATE participants SET status='Accepted' WHERE jobId=:jobId AND userId=:userId;"
+        self.db.session.execute(sql, {"jobId":jobId, "userId":userId})
+        self.db.session.commit()
+    
+    def deleteParticipant(self, jobId, userId):
+        sql="DELETE FROM participants WHERE jobId=:jobId AND userId=:userId;"
+        self.db.session.execute(sql, {"jobId":jobId, "userId":userId})
         self.db.session.commit()
