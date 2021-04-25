@@ -4,19 +4,22 @@
 <h1>Keikkakalenteri</h1>
 
 {% if session.username %}
-  <p>You are logged in as {{ session.username }}</p>
+  <p>You are logged in as {{ name }}</p>
   {% if isAdmin %}
     <a href="/add_new_user">Add a new user</a>
     <a href="/add_new_job">Add a new event</a>
   {% endif %}
   <a href="/logout">Log out</a>
-  <h2>Keikat käyttäjälle {{ session.username }}:</h2>
+  <h2>Keikat käyttäjälle {{ name }}:</h2>
   <table>
     <tr>
       <th>Event</th>
       <th>Time</th>
       <th>Location</th>
       <th>{% if isAdmin %}Participants{% else %}Status{% endif %}</th>
+      {% if isAdmin %}
+      <th>Actions</th>
+      {% endif %}
     </tr>
     {% for job in jobs: %}
       <tr>
@@ -43,6 +46,11 @@
             {% endif %}
           {% endif %}
         </td>
+        {% if isAdmin %}
+        <td>
+          <a href="/deleteEvent?event={{ job[0] }}">Delete</a>
+        </td>
+        {% endif %}
       </tr>
     {% endfor %}
   </table>

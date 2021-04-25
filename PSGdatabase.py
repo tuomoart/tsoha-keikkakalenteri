@@ -31,11 +31,18 @@ class PSGdatabase:
         return result
     
     def getPassword(self, username):
-        sql = "SELECT password FROM users WHERE username=:username"
+        sql = "SELECT password FROM users WHERE username=:username;"
         result = self.db.session.execute(sql, {"username":username})
         self.db.session.commit()
         password = result.fetchone()
         return password
+
+    def getName(self, username):
+        sql = "SELECT name FROM users WHERE username=:username;"
+        result = self.db.session.execute(sql, {"username":username}).fetchone()
+        self.db.session.commit()
+        return result[0]
+
 
     def createUser(self, name, username, passHash, usergroup):
         sql = "INSERT INTO users (name,username,password,usergroup) VALUES (:name,:username,:password,:usergroup)"
@@ -95,6 +102,13 @@ class PSGdatabase:
     def markAccepted(self, jobId, userId):
         sql="UPDATE participants SET status='Accepted' WHERE jobId=:jobId AND userId=:userId;"
         self.db.session.execute(sql, {"jobId":jobId, "userId":userId})
+        self.db.session.commit()
+
+    def deleteEvent(self, id):
+        sql="DELETE FROM jobs WHERE id=:jobId;"
+        self.db.session.execute(sql, {"jobId":id})
+        sql="DELETE FROM participants WHERE jobId=:jobId;"
+        self.db.session.execute(sql, {"jobId":id})
         self.db.session.commit()
     
     def deleteParticipant(self, jobId, userId):

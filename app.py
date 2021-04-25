@@ -25,9 +25,10 @@ def mainPage():
     
     try:
         user = session["username"]
+        name = db.getName(user)
         jobs = db.getJobs(user)
         print(jobs)
-        return render_template("main.html", isAdmin=isAdmin, jobs=jobs)
+        return render_template("main.html", name=name, isAdmin=isAdmin, jobs=jobs)
     except Exception as e:
         print(e)
         return redirect("/")
@@ -64,6 +65,9 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
         passwordConf = request.form["passwordConf"]
+        if name=="" or username=="" or password=="":
+            error = "Name, username and password must be given!"
+            return render_template("add_new_user.html", error=error)
         if db.usernameExists(username):
             error = "Username already exists!"
             return render_template("add_new_user.html", error=error)
@@ -98,6 +102,11 @@ def deleteParticipant():
     jobId = request.args['event']
     userId = request.args['participant']
     db.deleteParticipant(jobId, userId)
+    return redirect("/main")
+
+@app.route("/deleteEvent")
+def deleteEvent():
+    db.deleteEvent(request.args['event'])
     return redirect("/main")
 
 @app.route("/add_new_user")
