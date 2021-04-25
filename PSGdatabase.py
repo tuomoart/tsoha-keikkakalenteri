@@ -86,7 +86,7 @@ class PSGdatabase:
             sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j ORDER BY j.time, j.name;"
             result =  self.db.session.execute(sql).fetchall()
         else:
-            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE :username IN (SELECT u.name FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) ORDER BY j.time, j.name;"
+            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE :username IN (SELECT u.username FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) ORDER BY j.time, j.name;"
             result =  self.db.session.execute(sql, {"username":user}).fetchall()
         self.db.session.commit()
         return result
