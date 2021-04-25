@@ -13,13 +13,13 @@ Satunnainen käyttäjä ei voi luoda käyttäjätunnusta itse. Tämän takia tes
 
 Admin-oikeuksilla:
 
-käyttäjänimi: boss, salasana: 8055
+ - käyttäjänimi: boss, salasana: 8055
 
 
 Peruskäyttäjä:
 
-käyttäjänimi: elli, salasana: 3ll1
-käyttäjänimi: timppa, salasana t1m0
+ - käyttäjänimi: elli, salasana: 3ll1
+ - käyttäjänimi: timppa, salasana t1m0
 
 
 Vain admin-oikeuksilla varustettu käyttäjä voi luoda uusia käyttäjiä tai keikkoja tai muokata näitä. Peruskäyttäjä voi hyväksyä omia keikkojaan.
