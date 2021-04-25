@@ -2,26 +2,27 @@
 
 ## Sovelluksen eteneminen
 
-Sovelluksessa on nyt melko valmis kirjautuminen palautteineen ja käyttäjärooleineen.
+Sovelluksessa on nyt melko valmiit toiminnot käyttäjähallintaan, keikkojen tallettamiseen ja osallistujien hallintaan. Osallistujat voivat hyväksyä heille tarjottuja keikkoja, adminit voivat poistaa osallistujia ja keikkoja. Muiden keikan tietojen muokkaus puuttuu vielä, sekä kaikkien käyttäjien listaaminen ja käyttäjän muokkaus/poisto.
 
 Sovellus löytyy [Herokusta](https://keikkakalenteri.herokuapp.com/)
 
 ## Sovelluksen käyttö
 
-Satunnainen käyttäjä ei voi luoda käyttäjätunnusta itse. Tämän takia testikäyttöä varten sovelluksessa on valmiina kaksi käyttäjää:
+Satunnainen käyttäjä ei voi luoda käyttäjätunnusta itse. Tämän takia testikäyttöä varten sovelluksessa on valmiina kolme käyttäjää:
 
 
 Admin-oikeuksilla:
 
-käyttäjänimi: AdminTesti, salasana: AdminTesti
+käyttäjänimi: boss, salasana: 8055
 
 
 Peruskäyttäjä:
 
-käyttäjänimi: testi, salasana: testi
+käyttäjänimi: elli, salasana: 3ll1
+käyttäjänimi: timppa, salasana t1m0
 
 
-Vain admin-oikeuksilla varustettu käyttäjä voi luoda uusia käyttäjiä.
+Vain admin-oikeuksilla varustettu käyttäjä voi luoda uusia käyttäjiä tai keikkoja tai muokata näitä. Peruskäyttäjä voi hyväksyä omia keikkojaan.
 
 
 ## Sovelluksen kuvaus
