@@ -7,7 +7,7 @@
   <p>You are logged in as {{ name }}</p>
   {% if isAdmin %}
     <a href="/add_new_user">Add a new user</a>
-    <a href="/add_new_job">Add a new event</a>
+    <a href="/jobEditor">Add a new event</a>
   {% endif %}
   <a href="/logout">Log out</a>
   <h2>Keikat käyttäjälle {{ name }}:</h2>
@@ -48,6 +48,7 @@
         </td>
         {% if isAdmin %}
         <td>
+          <a href="/jobEditor?event={{ job[0] }}">Edit</a>,<br>
           <a href="/deleteEvent?event={{ job[0] }}">Delete</a>
         </td>
         {% endif %}

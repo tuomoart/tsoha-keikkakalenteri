@@ -12,6 +12,12 @@ app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 
 db = PSGdatabase(app)
 
+def getIds(list):
+    res = []
+    for i in list:
+        res.append(i[0])
+    return res
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -27,7 +33,6 @@ def mainPage():
         user = session["username"]
         name = db.getName(user)
         jobs = db.getJobs(user)
-        print(jobs)
         return render_template("main.html", name=name, isAdmin=isAdmin, jobs=jobs)
     except Exception as e:
         print(e)
@@ -90,6 +95,16 @@ def createJob():
     db.createJob(name, time, location, participants)
     return redirect("/main")
 
+@app.route("/updateJob", methods=["POST"])
+def updateJob():
+    id = request.args['event']
+    name = request.form["name"]
+    time = request.form["time"]
+    location = request.form["location"]
+    participants = request.form.getlist("participants")
+    db.updateJob(id, name, time, location, participants)
+    return redirect("/main")
+
 @app.route("/accept")
 def accept():
     jobId = request.args['event']
@@ -113,10 +128,19 @@ def deleteEvent():
 def addNewUser():
     return render_template("add_new_user.html")
 
-@app.route("/add_new_job")
+@app.route("/jobEditor")
 def addNewJob():
     participants = db.getUsers()
-    return render_template("add_new_job.html", participants=participants)
+    try:
+        jobId=request.args['event']
+        jobData=db.getJob(jobId)
+        participantIds = getIds(jobData[4])
+        print(participantIds)
+        return render_template("edit_job.html", participants=participants, job=jobData, participantIds=participantIds)
+    except:
+        return render_template("add_new_job.html", participants=participants)
+    
+    
 
 @app.route("/purge")
 def purge():

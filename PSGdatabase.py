@@ -90,6 +90,12 @@ class PSGdatabase:
             result =  self.db.session.execute(sql, {"username":user}).fetchall()
         self.db.session.commit()
         return result
+    
+    def getJob(self, id):
+        sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE j.id=:jobId;"
+        result =  self.db.session.execute(sql, {"jobId":id}).fetchone()
+        self.db.session.commit()
+        return result
 
     def createJob(self, name, time, location, participants):
         sql="INSERT INTO jobs (name, time, location) VALUES (:name,:time,:location) RETURNING id;"
@@ -99,6 +105,11 @@ class PSGdatabase:
             self.db.session.execute(sql, {"jobId":id, "userId":userId})
         self.db.session.commit()
     
+    def updateJob(self, id, name, time, location, participants):
+        sql="UPDATE jobs SET name=:name, time=:time, location=:location WHERE id=:id;"
+        self.db.session.execute(sql, {"id":id,"name":name,"time":time,"location":location})
+        self.db.session.commit()
+
     def markAccepted(self, jobId, userId):
         sql="UPDATE participants SET status='Accepted' WHERE jobId=:jobId AND userId=:userId;"
         self.db.session.execute(sql, {"jobId":jobId, "userId":userId})
