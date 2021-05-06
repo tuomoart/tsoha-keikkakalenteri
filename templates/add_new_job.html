@@ -8,7 +8,13 @@
     <p>Time:<br>
     <input type="datetime-local" name="time"></p>
     <p>Location:<br>
-    <input type="text" name="location"></p>
+    <input type="text" list="locations" name="location">
+    <datalist id="locations">
+      {% for location in locations %}
+        <option value="{{ location[1] }}">
+      {% endfor %}
+    </datalist>
+    </p>
 
     <p>Participants:<br>
     {% for participant in participants %}

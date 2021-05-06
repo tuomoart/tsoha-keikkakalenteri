@@ -89,16 +89,16 @@ class PSGdatabase:
     
     def getJobs(self, user):
         if self.isAdmin(user):
-            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j ORDER BY j.time, j.name;"
+            sql = "SELECT j.id, j.name, j.time, (SELECT name FROM locations l WHERE l.id = j.location), array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j ORDER BY j.time, j.name;"
             result =  self.db.session.execute(sql).fetchall()
         else:
-            sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE :username IN (SELECT u.username FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) ORDER BY j.time, j.name;"
+            sql = "SELECT j.id, j.name, j.time, (SELECT name FROM locations l WHERE l.id = j.location), array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE :username IN (SELECT u.username FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) ORDER BY j.time, j.name;"
             result =  self.db.session.execute(sql, {"username":user}).fetchall()
         self.db.session.commit()
         return result
     
     def getJob(self, id):
-        sql = "SELECT j.id, j.name, j.time, j.location, array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE j.id=:jobId;"
+        sql = "SELECT j.id, j.name, j.time, (SELECT name FROM locations l WHERE l.id = j.location), array(SELECT string_to_array(u.id || ',' || u.name || ',' || p.status, ',') FROM participants p JOIN users u ON u.id=p.userId WHERE p.jobId=j.id) AS participants FROM jobs j WHERE j.id=:jobId;"
         result =  self.db.session.execute(sql, {"jobId":id}).fetchone()
         self.db.session.commit()
         return result
@@ -149,7 +149,8 @@ class PSGdatabase:
         self.db.session.commit()
     
     def getLocations(self):
-        return self.db.execute("SELECT id, name FROM locations;").fetchall()
+        result = self.db.session.execute("SELECT id, name FROM locations;").fetchall()
+        return result
     
     def addLocation(self, name):
         sql = "INSERT INTO locations (name) VALUES (:name) RETURNING id;"

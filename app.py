@@ -143,14 +143,15 @@ def addNewUser():
 @app.route("/jobEditor")
 def addNewJob():
     participants = db.getUsersInGroup("normal")
+    locations = db.getLocations()
     try:
         jobId=request.args['event']
         jobData=db.getJob(jobId)
         participantIds = getIds(jobData[4])
         print(participantIds)
-        return render_template("edit_job.html", participants=participants, job=jobData, participantIds=participantIds)
+        return render_template("edit_job.html", locations=locations, participants=participants, job=jobData, participantIds=participantIds)
     except:
-        return render_template("add_new_job.html", participants=participants)
+        return render_template("add_new_job.html", locations=locations, participants=participants)
     
     
 
