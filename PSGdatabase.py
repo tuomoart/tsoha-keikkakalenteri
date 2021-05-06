@@ -11,6 +11,7 @@ class PSGdatabase:
 
         self.initializeUsers()
         self.initializeJobs()
+        self.initializeLocations()
     
     #Users:
 
@@ -81,7 +82,7 @@ class PSGdatabase:
     # Jobs:
 
     def initializeJobs(self):
-        sql = "CREATE TABLE IF NOT EXISTS jobs (id SERIAL PRIMARY KEY, name TEXT, time TEXT, location TEXT);"
+        sql = "CREATE TABLE IF NOT EXISTS jobs (id SERIAL PRIMARY KEY, name TEXT, time TEXT, location INT);"
         sql += "CREATE TABLE IF NOT EXISTS participants (id SERIAL PRIMARY KEY, jobId INT, userId INT, status TEXT);"
         self.db.session.execute(sql)
         self.db.session.commit()
@@ -109,13 +110,15 @@ class PSGdatabase:
         self.db.session.commit()
 
     def createJob(self, name, time, location, participants):
+        locationId = self.getLocationId(location)
         sql="INSERT INTO jobs (name, time, location) VALUES (:name,:time,:location) RETURNING id;"
-        id = self.db.session.execute(sql, {"name":name,"time":time,"location":location}).fetchone()[0]
+        id = self.db.session.execute(sql, {"name":name,"time":time,"location":locationId}).fetchone()[0]
         self.addParticipants(id, participants)
     
     def updateJob(self, id, name, time, location, participants):
+        locationId = self.getLocationId(location)
         sql="UPDATE jobs SET name=:name, time=:time, location=:location WHERE id=:id;"
-        self.db.session.execute(sql, {"id":id,"name":name,"time":time,"location":location})
+        self.db.session.execute(sql, {"id":id,"name":name,"time":time,"location":locationId})
         sql="DELETE FROM participants WHERE jobId=:jobId;"
         self.db.session.execute(sql, {"jobId":id})
         self.addParticipants(id, participants)
@@ -137,3 +140,26 @@ class PSGdatabase:
         sql="DELETE FROM participants WHERE jobId=:jobId AND userId=:userId;"
         self.db.session.execute(sql, {"jobId":jobId, "userId":userId})
         self.db.session.commit()
+    
+    # Locations
+
+    def initializeLocations(self):
+        sql = "CREATE TABLE IF NOT EXISTS locations (id SERIAL PRIMARY KEY, name TEXT);"
+        self.db.session.execute(sql)
+        self.db.session.commit()
+    
+    def getLocations(self):
+        return self.db.execute("SELECT id, name FROM locations;").fetchall()
+    
+    def addLocation(self, name):
+        sql = "INSERT INTO locations (name) VALUES (:name) RETURNING id;"
+        res = self.db.session.execute(sql, {"name":name}).fetchone()[0]
+        return res
+    
+    def getLocationId(self, name):
+        sql = "SELECT id FROM locations WHERE name=:name"
+        result = self.db.session.execute(sql, {"name":name}).fetchall()
+        if len(result)<1:
+            result = self.addLocation(name)
+        return result
+
