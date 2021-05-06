@@ -30,6 +30,11 @@ class PSGdatabase:
         self.db.session.commit()
         return result
     
+    def getUsersInGroup(self, group):
+        result =  self.db.session.execute("SELECT id, name FROM users WHERE usergroup=:group;", {"group":group}).fetchall()
+        self.db.session.commit()
+        return result
+    
     def getPassword(self, username):
         sql = "SELECT password FROM users WHERE username=:username;"
         result = self.db.session.execute(sql, {"username":username})

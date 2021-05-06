@@ -142,7 +142,7 @@ def addNewUser():
 
 @app.route("/jobEditor")
 def addNewJob():
-    participants = db.getUsers()
+    participants = db.getUsersInGroup("normal")
     try:
         jobId=request.args['event']
         jobData=db.getJob(jobId)
