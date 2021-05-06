@@ -1,8 +1,9 @@
 from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session, abort
 from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
 from flask_sqlalchemy import SQLAlchemy
+import secrets
 
 from PSGdatabase import PSGdatabase
 
@@ -51,6 +52,7 @@ def login():
         hash_value = user[0]
         if check_password_hash(hash_value,password):
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
             return redirect("/main")
         else:
             error = "Invalid password"
@@ -60,10 +62,14 @@ def login():
 @app.route("/logout")
 def logout():
     del session["username"]
+    del session["csrf_token"]
     return redirect("/")
 
 @app.route("/register", methods=["POST"])
 def register():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    
     if db.isAdmin(session["username"]):
         name = request.form["name"]
         usergroup = request.form["usergroup"]
@@ -88,6 +94,9 @@ def register():
 
 @app.route("/createJob", methods=["POST"])
 def createJob():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
     name = request.form["name"]
     time = request.form["time"]
     location = request.form["location"]
@@ -97,6 +106,9 @@ def createJob():
 
 @app.route("/updateJob", methods=["POST"])
 def updateJob():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
     id = request.args['event']
     name = request.form["name"]
     time = request.form["time"]

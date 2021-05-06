@@ -1,5 +1,5 @@
-<title>Keikkakalenteri</title>
-<h1>Keikkakalenteri</h1>
+{% extends "layout.html" %}
+{% block content %}
 {% if session.username %}
 <meta http-equiv="refresh" content="0; URL=/main" />
 {% else %}
@@ -9,8 +9,10 @@
 <p>Password:<br>
 <input type="password" name="password"></p>
 <input type="submit" value="Login">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 {% if error %}
 <p class=error><strong>Error:</strong> {{ error }} </p>
 {% endif %}
 </form>
 {% endif %}
+{% endblock %}

@@ -97,17 +97,23 @@ class PSGdatabase:
         self.db.session.commit()
         return result
 
+    def addParticipants(self, jobId, participants):
+        for userId in participants:
+            sql="INSERT INTO participants (jobId, userId, status) VALUES (:jobId,:userId, 'Waiting')"
+            self.db.session.execute(sql, {"jobId":jobId, "userId":userId})
+        self.db.session.commit()
+
     def createJob(self, name, time, location, participants):
         sql="INSERT INTO jobs (name, time, location) VALUES (:name,:time,:location) RETURNING id;"
         id = self.db.session.execute(sql, {"name":name,"time":time,"location":location}).fetchone()[0]
-        for userId in participants:
-            sql="INSERT INTO participants (jobId, userId, status) VALUES (:jobId,:userId, 'Waiting')"
-            self.db.session.execute(sql, {"jobId":id, "userId":userId})
-        self.db.session.commit()
+        self.addParticipants(id, participants)
     
     def updateJob(self, id, name, time, location, participants):
         sql="UPDATE jobs SET name=:name, time=:time, location=:location WHERE id=:id;"
         self.db.session.execute(sql, {"id":id,"name":name,"time":time,"location":location})
+        sql="DELETE FROM participants WHERE jobId=:jobId;"
+        self.db.session.execute(sql, {"jobId":id})
+        self.addParticipants(id, participants)
         self.db.session.commit()
 
     def markAccepted(self, jobId, userId):
