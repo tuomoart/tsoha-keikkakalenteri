@@ -152,10 +152,3 @@ def addNewJob():
         return render_template("edit_job.html", locations=locations, participants=participants, job=jobData, participantIds=participantIds)
     except:
         return render_template("add_new_job.html", locations=locations, participants=participants)
-    
-    
-
-@app.route("/purge")
-def purge():
-    db.purgeUsers()
-    return redirect("/")

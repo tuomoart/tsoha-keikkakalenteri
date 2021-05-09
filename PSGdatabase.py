@@ -70,10 +70,6 @@ class PSGdatabase:
         found = result.fetchall()
         return len(found) > 0
 
-    def purgeUsers(self):
-        self.db.session.execute("DELETE FROM users")
-        self.db.session.commit()
-
     def getIdByUsername(self, username):
         sql = "SELECT id FROM users WHERE username=:username;"
         result = self.db.session.execute(sql, {"username": username}).fetchone()[0]
