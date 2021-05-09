@@ -162,5 +162,7 @@ class PSGdatabase:
         result = self.db.session.execute(sql, {"name":name}).fetchall()
         if len(result)<1:
             result = self.addLocation(name)
+        else:
+            result = result[0][0]
         return result
 
